@@ -1,6 +1,7 @@
 package com.mobei.tx.service.impl;
 
 import com.mobei.tx.dao.AccountInfoDao;
+import com.mobei.tx.dao.LocalTxDao;
 import com.mobei.tx.service.AccountInfoService;
 import com.mobei.tx.spring.Bank2Client;
 import io.seata.core.context.RootContext;
@@ -15,6 +16,9 @@ public class AccountInfoServiceImpl implements AccountInfoService {
 
     @Autowired
     AccountInfoDao accountInfoDao;
+
+    @Autowired
+    LocalTxDao localTxDao;
 
     @Autowired
     Bank2Client bank2Client;
@@ -36,6 +40,8 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         log.info("bank1 service begin,XID：{}", RootContext.getXID());
         //扣减张三的金额
         accountInfoDao.updateAccountBalance(accountNo,amount * -1);
+        localTxDao.insert(amount + "");
+//        int i = 1 / 0;
         //调用李四微服务，转账
         String transfer = bank2Client.transfer(amount);
         if("fallback".equals(transfer)){
